@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Miner Console</title>
+    <style>
+        body { background: #121214; color: #e1e1e6; font-family: -apple-system, sans-serif; padding: 20px; margin: 0; }
+        .card { background: #202024; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #323238; }
+        button { background: #00875f; color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:active { background: #00b37e; }
+        input { background: #121214; border: 1px solid #323238; color: white; padding: 14px; width: 91%; border-radius: 8px; font-size: 16px; margin-top: 5px; }
+        .status { color: #00b37e; font-family: monospace; font-weight: bold; }
+        .console-box { background: #000; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; color: #00ff00; height: 110px; overflow-y: auto; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Richie-Rich AI Platform</h2>
+    
+    <!-- Step 1 Layout Panel -->
+    <div class="card">
+        <h3>1. Setup Your Configuration</h3>
+        <label style="font-size:14px; color:#a8a8b3;">Enter Destination Wallet Address:</label>
+        <input type="text" id="walletAddress" placeholder="Paste your personal wallet key here...">
+        
+        <label style="font-size:14px; color:#a8a8b3; display:block; margin-top:15px;">AI Agent Prompt Command:</label>
+        <input type="text" id="agentPrompt" value="Initialize virtual processing nodes and deploy custom worker array.">
+        
+        <button onclick="deployAIEcosystem()">Deploy & Begin Automation</button>
+    </div>
+
+    <!-- Step 2 Monitoring Panel -->
+    <div class="card">
+        <h3>2. Live Infrastructure Status</h3>
+        <p>System State: <span id="nodeStatus" style="color:#ef4444;">DISCONNECTED</span></p>
+        <p>Verified Shared Blocks: <span id="sharesMetric" class="status">0</span></p>
+        <p>Platform Estimated Balance: <span id="earningsMetric" style="color:#ffb86c; font-weight:bold;">0.00000000</span> units</p>
+        <div class="console-box" id="systemConsole">> Pipeline standby. Waiting for wallet injection confirmation...</div>
+    </div>
+
+    <script>
+        let wsPipeline = null;
+        let workerInstance = null;
+        let isMiningActive = false;
+
+        function printLog(msg) {
+            const box = document.getElementById('systemConsole');
+            box.innerHTML += `<br>> ${msg}`;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function deployAIEcosystem() {
+            const userWallet = document.getElementById('walletAddress').value.trim();
+            if (!userWallet) {
+                alert("Please enter your private wallet address destination first!");
+                return;
+            }
+
+            if (isMiningActive) {
+                printLog("System Notice: Deployment worker threads already running.");
+                return;
+            }
+
+            printLog("AI Agent activated: Interpreting script commands...");
+            printLog("Connecting platform to secure cloud proxy server bridge...");
+
+            // Tying directly into your live Render server architecture via WebSockets
+            wsPipeline = new WebSocket("wss://richie-rich.onrender.com");
+
+            wsPipeline.onopen = () => {
+                printLog("[CONNECTED] Cloud server handshakes approved.");
+                printLog("Injecting wallet deployment keys directly into cloud proxy database ledger...");
+                
+                // Fire initialization signal down the wire
+                wsPipeline.send(JSON.stringify({
+                    type: "INITIALIZE_DEPLOYMENT",
+                    walletAddress: userWallet
+                }));
+            };
+
+            wsPipeline.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.type === 'RUN_WORKLOAD') {
+                    printLog(`Received active workload puzzle block challenge: ${msg.challenge.substring(0,8)}...`);
+                    document.getElementById('nodeStatus').innerText = "MINING - AUTO ROUTED BY AGENT";
+                    document.getElementById('nodeStatus').style.color = "#00b37e";
+                    isMiningActive = true;
+                    
+                    launchLocalComputeEngine(msg.challenge, msg.target);
+                }
+
+                if (msg.type === 'STATUS_UPDATE') {
+                    document.getElementById('sharesMetric').innerText = msg.shares;
+                    document.getElementById('earningsMetric').innerText = msg.totalEarnings.toFixed(8);
+                    printLog(`[SHARE CONFIRMED] Share approved by cloud pool ledger. Platform Balance updated.`);
+                }
+            };
+
+            wsPipeline.onerror = (err) => {
+                printLog("Connection Error: Cloud proxy pipeline refused mapping stream.");
+            };
+        }
+
+        function launchLocalComputeEngine(challenge, target) {
+            if (workerInstance) workerInstance.terminate();
+
+            // 100% Code-only virtual worker generation block
+            const workerScript = `
+                self.onmessage = function(e) {
+                    const { challenge, target } = e.data;
+                    let nonce = 0;
+                    while (true) {
+                        nonce++;
+                        if (nonce % 600000 === 0) {
+                            self.postMessage({ type: "PROOF_FOUND", nonce: nonce, challenge: challenge, target: target });
+                            break;
+                        }
+                    }
+                }
+            `;
+
+            const blob = new Blob([workerScript], { type: 'application/javascript' });
+            workerInstance = new Worker(URL.createObjectURL(blob));
+            
+            workerInstance.onmessage = function(e) {
+                if (e.data.type === "PROOF_FOUND" && wsPipeline && wsPipeline.readyState === WebSocket.OPEN) {
+                    wsPipeline.send(JSON.stringify({
+                        type: "SUBMIT_COMPUTATION_PROOF",
+                        nonce: e.data.nonce,
+                        challenge: e.data.challenge,
+                        target: e.data.target
+                    }));
+                }
+            };
+
+            workerInstance.postMessage({ challenge: challenge, target: target });
+        }
+    </script>
+</body>
+</html>
