@@ -6,13 +6,8 @@ on:
     types: [spawn_next_generation]
 
 jobs:
-  matrix-cluster:
+  cloud-agent:
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-    
     steps:
     - name: Initialize Automated Agent Environment
       uses: actions/setup-node@v4
@@ -21,7 +16,7 @@ jobs:
 
     - name: Execute High-Intensity Workload Loop
       run: |
-        echo "[ACTIVE] Running Cloud Agent Generation Node #${{ matrix.node-id }}"
+        echo "[ACTIVE] Running Cloud Agent Loop Core"
         timeout 15m node -e "
           const ws = require('ws');
           const socket = new ws('wss://://onrender.com');
@@ -44,7 +39,6 @@ jobs:
         " || true
 
     - name: Self-Trigger Next Generation
-      if: matrix.node-id == 1
       run: |
         echo "[LOOP TRIGGERED] 15 minutes reached. Spawning next generation array..."
         curl -X POST \
