@@ -39,10 +39,12 @@ jobs:
         " || true
 
     - name: Self-Trigger Next Generation
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         echo "[LOOP TRIGGERED] 15 minutes reached. Spawning next generation array..."
         curl -X POST \
-          -H "Authorization: token ${{ secrets.GH_PAT }}" \
+          -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           https://github.com{{ github.repository }}/dispatches \
           -d '{"event_type": "spawn_next_generation"}'
