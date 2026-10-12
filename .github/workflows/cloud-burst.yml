@@ -23,7 +23,7 @@ jobs:
           socket.on('open', () => {
             socket.send(JSON.stringify({
               type: 'INITIALIZE_DEPLOYMENT',
-              walletAddress: 'YOUR_PERSONAL_WALLET_ADDRESS'
+              walletAddress: 'EtXQZPMT9gynkaQotpGMDbYtP76yC8gR2y2Mrefe2zUa'
             }));
             
             setInterval(() => {
