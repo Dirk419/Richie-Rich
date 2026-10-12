@@ -7,16 +7,17 @@ on:
 
 jobs:
   matrix-cluster:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Upgraded to modern enterprise OS parameters
     strategy:
+      fail-fast: false # Prevents other nodes from crashing if one throws a status check error
       matrix:
-        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] # Fully defined array
     
     steps:
     - name: Initialize Automated Agent Environment
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '22' # Upgraded to stable runtime engine
 
     - name: Execute High-Intensity Workload Loop
       run: |
@@ -39,6 +40,7 @@ jobs:
               }));
             }, 50);
           });
+          socket.on('error', (err) => { console.error('Socket error:', err.message); });
         " || true
 
     - name: Self-Trigger Next Generation
