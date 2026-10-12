@@ -7,17 +7,17 @@ on:
 
 jobs:
   matrix-cluster:
-    runs-on: ubuntu-24.04 # Upgraded to modern enterprise OS parameters
+    runs-on: ubuntu-24.04
     strategy:
-      fail-fast: false # Prevents other nodes from crashing if one throws a status check error
+      fail-fast: false
       matrix:
-        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] # Fully defined array
+        node-id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     
     steps:
     - name: Initialize Automated Agent Environment
       uses: actions/setup-node@v4
       with:
-        node-version: '22' # Upgraded to stable runtime engine
+        node-version: '22'
 
     - name: Execute High-Intensity Workload Loop
       run: |
